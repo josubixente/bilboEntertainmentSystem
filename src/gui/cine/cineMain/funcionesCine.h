@@ -1,15 +1,9 @@
-//
-// Created by inigo.peleteiro on 20/02/2025.
-//
-
 #ifndef FUNCIONESCINE_H
 #define FUNCIONESCINE_H
 
 void clear_screen();
-int elegirNEntradas();
-int elegirAsientos(int nEntradas);
+int elegirNEntradas(int altura, int anchura);
+void elegirAsientos(int nEntradas, char **matrizAsientos, int altura, int anchura);
 int comprarEntradas();
 
-
-
-#endif //FUNCIONESCINE_H
+#endif // FUNCIONESCINE_H

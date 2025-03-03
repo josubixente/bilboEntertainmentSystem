@@ -12,111 +12,132 @@ void clear_screen() {
 }
 
 // elegir numero de entradas
-int elegirNEntradas(){
+int elegirNEntradas(int altura, int anchura) {
     int nEntradas;
     printf("Cuantas entradas quieres comprar?: ");
     scanf("%d", &nEntradas);
+    while (nEntradas > altura * anchura) {
+        printf("No hay suficientes asientos disponibles. Intenta de nuevo: ");
+        scanf("%d", &nEntradas);
+    }
     return nEntradas;
 }
-int elegirAsientos(int nEntradas){
-    int altura = 5;
-    int anchura = 40;
-    typedef struct {
-        int fila;
-        int columna;
-    } Asiento;
-    Asiento asiento1 = {0, 0};
-    char matrizAsientos[altura][anchura];
+
+void elegirAsientos(int nEntradas, char **matrizAsientos, int altura, int anchura) {
     printf("------------------------------------------------------------------------------------------------------------------------\n");
     printf("                                                              pantalla\n");
     printf("------------------------------------------------------------------------------------------------------------------------\n");
-    for (int i = 0; i < altura; i++) {
 
+    for (int i = 0; i < altura; i++) {
         for (int j = 0; j < anchura; j++) {
-            matrizAsientos[i][j] = 0;
+            matrizAsientos[i][j] = '0';
         }
     }
     for (int i = 0; i < altura; i++) {
-        printf("%d  ", i);
+        printf("%d  ", i + 1);
         for (int j = 0; j < anchura; j++) {
             if (i == 0) {
-                if (j>9){
+                if (j > 9) {
                     printf("%d ", j);
-                }
-                else
-                {
+                } else {
                     printf("%d  ", j);
                 }
+            } else {
+                printf("%c  ", matrizAsientos[i][j]);
             }
-            else
-            {
-                printf("%d  ", matrizAsientos[i][j]);
-            }
-
         }
         printf("\n");
     }
-    for (int i=0; i<nEntradas; i++){
-        printf("Elige el asiento %d: ", i);
-        printf("fila: ");
-        asiento1.fila = getchar();
-        printf("columna: ");
-        asiento1.columna = getchar();
+    for (int i = 0; i < nEntradas; i++) {
+        int fila, columna;
+        printf("Elige numero de fila: \n");
+        scanf("%d", &fila);
+        printf("Elige numero de columna: \n");
+        scanf("%d", &columna);
 
-        if (matrizAsientos[asiento1.fila][asiento1.columna] == '0'){
-            matrizAsientos[asiento1.fila][asiento1.columna] = 'x';
-        }
-        else{
-            printf("El asiento ya esta ocupado\n");
-            i--;
+        if (fila >= 0 && fila < altura && columna >= 0 && columna < anchura) {
+            if (matrizAsientos[fila][columna] == '0') {
+                matrizAsientos[fila][columna] = 'x';
+                printf("Asiento [%d, %d] reservado.\n", fila, columna);
+            } else {
+                printf("El asiento [%d, %d] ya está ocupado. Elige otro asiento.\n", fila, columna);
+                i--;  // Decrement i to retry the current seat selection
+            }
+        } else {
+            printf("Asiento [%d, %d] fuera de rango. Elige otro asiento.\n", fila, columna);
+            i--;  // Decrement i to retry the current seat selection
         }
     }
-
-
-    return 0;
 }
-// elegir pelicula
-int comprarEntradas()
-{
+
+
+int comprarEntradas() {
     char e = 'e';
     int pelicula;
-    char entradas[100][100];
     int nentradas;
-    while(e != '0'){
+    int altura = 5;
+    int anchura = 40;
+    char **matrizAsientos;
 
-        pelicula='1';
+    // Allocate and initialize matrizAsientos
+    matrizAsientos = (char **)calloc(altura, sizeof(char *));
+    for (int i = 0; i < altura; i++) {
+        matrizAsientos[i] = (char *)calloc(anchura, sizeof(char));
+    }
+
+    // Allocate and initialize entradas
+    char **entradas = (char **)calloc(100, sizeof(char *));
+    for (int i = 0; i < 100; i++) {
+        entradas[i] = (char *)calloc(100, sizeof(char));
+    }
+
+    while(e != '0') {
+        pelicula = '1';
         strcpy(entradas[0], "Han Solo");
         strcpy(entradas[1], "Indiana Jones");
         strcpy(entradas[2], "Rick Deckard");
         strcpy(entradas[3], "Jack Ryan");
         strcpy(entradas[4], "game of thrones");
-        strcpy(entradas[4], "garfield");
+        strcpy(entradas[5], "garfield");
         printf("Elige una pelicula\n");
         printf("===================================\n");
-        for (int i = 0; i < 100 ; i++)
-        {
+        for (int i = 0; i < 100; i++) {
             if (strlen(entradas[i]) == 0) {
                 break;
             }
             printf("(%d): --> %s <-- \n", i, entradas[i]);
         }
         pelicula = getchar() - '0';
-        if (pelicula > 0 && pelicula < 4)
-        {
-            nentradas = elegirNEntradas();
-            elegirAsientos(nentradas);
-
-        }
-        else
-        {
+        if (pelicula >= 0 && pelicula < 4) {
+            nentradas = elegirNEntradas(altura, anchura);
+            elegirAsientos(nentradas, matrizAsientos, altura, anchura);
+            printf("Ticket de compra\n");
+            printf("Pelicula: %s\n", entradas[pelicula]);
+            printf("Asientos: %i \n", nentradas);
+            printf("pulse e para seguir comprando y cualquier otra cosa para salir :\n");
+            char g;
+            scanf("%d", &g);
+            if (g != 'e') {
+                e = '0';
+            }
+        } else {
             printf("No has elegido ninguna pelicula\n");
             clear_screen();
-
-
         }
     }
 
     printf("Has elegido %s\n", entradas[pelicula]);
+
+    // Free allocated memory
+    for (int i = 0; i < altura; i++) {
+        free(matrizAsientos[i]);
+    }
+    free(matrizAsientos);
+
+    for (int i = 0; i < 100; i++) {
+        free(entradas[i]);
+    }
+    free(entradas);
 
     return 0;
 }
