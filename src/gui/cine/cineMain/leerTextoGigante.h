@@ -1,0 +1,6 @@
+#ifndef LEERTEXTOGIGANTE_H
+#define LEERTEXTOGIGANTE_H
+
+int leerTcine();
+
+#endif // LEERTEXTOGIGANTE_H
